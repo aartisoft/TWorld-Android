@@ -17,6 +17,7 @@
         android:supportsRtl="false"
         android:theme="@style/AppTheme"
         tools:replace="allowBackup,supportsRtl">
+
         <activity
             android:name=".Accounts.SignUpActivity"
             android:screenOrientation="portrait"
@@ -148,8 +149,8 @@
             android:name="org.apache.http.legacy"
             android:required="false" />
     </application>
-
     <uses-feature android:name="android.hardware.camera.autofocus" />
+
     <uses-feature
         android:name="android.hardware.camera2.full"
         android:required="false" />
@@ -162,7 +163,6 @@
     <uses-permission android:name="android.permission.RECORD_VIDEO" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
-
     <uses-permission android:name="android.permission.FLASHLIGHT" />
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />

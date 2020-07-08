@@ -86,10 +86,7 @@ public class Liked_Video_F extends Fragment {
 
         no_data_layout=view.findViewById(R.id.no_data_layout);
 
-        Call_Api_For_get_Allvideos();
-
-
-
+        //Call_Api_For_get_Allvideos();
 
         return view;
     }
@@ -99,9 +96,7 @@ public class Liked_Video_F extends Fragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if(view!=null && isVisibleToUser){
-            Call_Api_For_get_Allvideos();
-
-
+           // Call_Api_For_get_Allvideos();
         }
     }
 

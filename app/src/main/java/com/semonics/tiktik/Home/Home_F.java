@@ -182,6 +182,7 @@ public class Home_F extends RootFragment implements Player.EventListener, Fragme
         });
 
         Call_Api_For_get_Allvideos();
+
         return view;
     }
 
@@ -205,11 +206,7 @@ public class Home_F extends RootFragment implements Player.EventListener, Fragme
                         break;
 
                     case R.id.like_layout:
-                       // if(Variables.sharedPreferences.getBoolean(Variables.islogin,false)) {
                         Like_Video(postion, item);
-                       /* }else {
-                            Toast.makeText(context, "Please Login.", Toast.LENGTH_SHORT).show();
-                        }*/
                         break;
 
                     case R.id.comment_layout:
@@ -232,15 +229,11 @@ public class Home_F extends RootFragment implements Player.EventListener, Fragme
 
 
                     case R.id.sound_image_layout:
-                        if(Variables.sharedPreferences.getBoolean(Variables.islogin,false)) {
                             if(check_permissions()) {
                                 Intent intent = new Intent(getActivity(), VideoSound_A.class);
                                 intent.putExtra("data", item);
                                 startActivity(intent);
                             }
-                        }else {
-                            Toast.makeText(context, "Please Login.", Toast.LENGTH_SHORT).show();
-                        }
 
                         break;
                 }
@@ -704,11 +697,7 @@ public class Home_F extends RootFragment implements Player.EventListener, Fragme
         comment_f.setArguments(args);
         transaction.addToBackStack(null);
         transaction.replace(R.id.MainMenuFragment, comment_f).commit();
-
-
     }
-
-
 
     // this will open the profile of user which have uploaded the currenlty running video
     private void OpenProfile(Home_Get_Set item,boolean from_right_to_left) {
