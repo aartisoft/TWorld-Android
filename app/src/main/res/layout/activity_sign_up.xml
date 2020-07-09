@@ -136,6 +136,7 @@
             android:textColor="@color/com_facebook_blue"
             android:layout_height="wrap_content"
             android:id="@+id/tv_log_in"
+            android:textSize="18sp"
             android:text="Log In" />
     </LinearLayout>
 </RelativeLayout>

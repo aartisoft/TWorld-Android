@@ -11,7 +11,10 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
+
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -20,6 +23,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.coremedia.iso.boxes.Container;
@@ -66,36 +70,41 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
     boolean is_recording=false;
     boolean is_flash_on=false;
 
-    ImageButton flash_btn;
+    ImageButton flash_btn,beautyBtn;
 
     SegmentedProgressBar video_progress;
 
     LinearLayout camera_options;
 
-    ImageButton rotate_camera;
+    ImageButton rotate_camera,ivTimer;
 
     public static int Sounds_list_Request_code=1;
-    TextView add_sound_txt;
+    TextView add_sound_txt,tvTimer;
+    RelativeLayout rlNormalView,rlTimerView;
 
 
     int sec_passed=0;
 
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Hide_navigation();
         setContentView(R.layout.activity_video_recoder);
-
-
         Variables.Selected_sound_id="null";
         Variables.recording_duration=Variables.max_recording_duration;
 
-
-
         cameraView = findViewById(R.id.camera);
+        ivTimer = findViewById(R.id.timer);
+        tvTimer = findViewById(R.id.tv_timer);
         camera_options=findViewById(R.id.camera_options);
+        beautyBtn = findViewById(R.id.beauty);
+        rlNormalView = findViewById(R.id.rl_normal_view);
+        rlTimerView = findViewById(R.id.rl_timer_view);
+        rlNormalView.setVisibility(View.VISIBLE);
+        rlTimerView.setVisibility(View.GONE);
 
         cameraView.addCameraKitListener(new CameraKitEventListener() {
             @Override
@@ -115,17 +124,32 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
 
             }
         });
-
-
         record_image=findViewById(R.id.record_image);
-
-
         findViewById(R.id.upload_layout).setOnClickListener(this);
-
-
         done_btn=findViewById(R.id.done);
         done_btn.setEnabled(false);
         done_btn.setOnClickListener(this);
+        ivTimer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rlNormalView.setVisibility(View.GONE);
+                rlTimerView.setVisibility(View.VISIBLE);
+
+                new CountDownTimer(10000, 1000) {
+                    public void onTick(long millisUntilFinished) {
+                        tvTimer.setText((millisUntilFinished / 1000)+"");
+                    }
+
+                    public void onFinish() {
+                        tvTimer.setText("0");
+                        rlNormalView.setVisibility(View.VISIBLE);
+                        rlTimerView.setVisibility(View.GONE);
+                            Start_or_Stop_Recording();
+                    }
+
+                }.start();
+            }
+        });
 
 
         rotate_camera=findViewById(R.id.rotate_camera);
@@ -150,7 +174,14 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
 
        // this is code hold to record the video
         final Timer[] timer = {new Timer()};
-        record_image.setOnTouchListener(new View.OnTouchListener() {
+        record_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                timer[0].cancel();
+                Start_or_Stop_Recording();
+            }
+        });
+    /*    record_image.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
@@ -183,14 +214,10 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
                 return false;
             }
 
-        });
-
+        });*/
 
 
         initlize_Video_progress();
-
-
-
     }
 
 
@@ -223,17 +250,13 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
 
         if (!is_recording && sec_passed<(Variables.recording_duration/1000)-1) {
             number=number+1;
-
             is_recording=true;
-
             File file = new File(Variables.root + "/" + "myvideo"+(number)+".mp4");
             videopaths.add(Variables.root + "/" + "myvideo"+(number)+".mp4");
             cameraView.captureVideo(file);
 
-
             if(audio!=null)
             audio.start();
-
 
 
             video_progress.resume();
@@ -266,6 +289,8 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
             if(sec_passed>((Variables.recording_duration/1000)/3)) {
                 done_btn.setBackgroundResource(R.drawable.ic_done);
                 done_btn.setEnabled(true);
+            }else {
+                Functions.Show_Alert(this,"Alert","Video duration is too low");
             }
 
             record_image.setImageDrawable(getResources().getDrawable(R.drawable.ic_recoding_no));
@@ -462,12 +487,18 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
                 overridePendingTransition(R.anim.in_from_bottom, R.anim.out_to_top);
                 break;
 
+            case R.id.beauty:
+                beautyWork();
+                break;
+
         }
 
 
     }
 
+    private void beautyWork() {
 
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
