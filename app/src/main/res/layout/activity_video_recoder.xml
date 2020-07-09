@@ -10,7 +10,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:id="@+id/rl_normal_view"
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_height="match_parent">
 
         <com.wonderkiln.camerakit.CameraView
@@ -187,6 +187,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:id="@+id/rl_timer_view"
+        android:visibility="gone"
         android:backgroundTint="@color/transparent"
         android:layout_height="match_parent">
 
