@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import androidx.annotation.Nullable;
 
+import com.daasuu.gpuv.composer.FillMode;
 import com.semonics.tiktik.SimpleClasses.ApiRequest;
 import com.semonics.tiktik.SimpleClasses.Callback;
 import com.semonics.tiktik.SoundLists.VideoSound_A;
@@ -116,6 +117,9 @@ public class Home_F extends RootFragment implements Player.EventListener, Fragme
     ProgressBar p_bar;
 
     SwipeRefreshLayout swiperefresh;
+    boolean isMute = false;
+    ImageView ivMute ;
+    TextView tvMute;
 
     public Home_F() {
         // Required empty public constructor
@@ -141,7 +145,8 @@ public class Home_F extends RootFragment implements Player.EventListener, Fragme
          snapHelper.attachToRecyclerView(recyclerView);
 
 
-
+        ivMute = view.findViewById(R.id.mute_video);
+        tvMute = view.findViewById(R.id.mute_text);
         // this is the scroll listener of recycler view which will tell the current item number
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -182,6 +187,7 @@ public class Home_F extends RootFragment implements Player.EventListener, Fragme
         });
 
         Call_Api_For_get_Allvideos();
+
         return view;
     }
 
@@ -205,15 +211,15 @@ public class Home_F extends RootFragment implements Player.EventListener, Fragme
                         break;
 
                     case R.id.like_layout:
-                       // if(Variables.sharedPreferences.getBoolean(Variables.islogin,false)) {
                         Like_Video(postion, item);
-                       /* }else {
-                            Toast.makeText(context, "Please Login.", Toast.LENGTH_SHORT).show();
-                        }*/
                         break;
 
                     case R.id.comment_layout:
                         OpenComment(item);
+                        break;
+
+                    case R.id.mute_layout:
+                        muteVideo();
                         break;
 
                     case R.id.shared_layout:
@@ -232,15 +238,11 @@ public class Home_F extends RootFragment implements Player.EventListener, Fragme
 
 
                     case R.id.sound_image_layout:
-                        if(Variables.sharedPreferences.getBoolean(Variables.islogin,false)) {
                             if(check_permissions()) {
                                 Intent intent = new Intent(getActivity(), VideoSound_A.class);
                                 intent.putExtra("data", item);
                                 startActivity(intent);
                             }
-                        }else {
-                            Toast.makeText(context, "Please Login.", Toast.LENGTH_SHORT).show();
-                        }
 
                         break;
                 }
@@ -686,7 +688,14 @@ public class Home_F extends RootFragment implements Player.EventListener, Fragme
 
     }
 
-
+private void muteVideo(){
+        isMute = !isMute;
+        if(isMute){
+           ivMute.setImageDrawable(getResources().getDrawable(R.drawable.ic_share));
+        }else{
+            ivMute.setImageDrawable(getResources().getDrawable(R.drawable.ic_like));
+        }
+}
 
     // this will open the comment screen
     private void OpenComment(Home_Get_Set item) {
@@ -704,11 +713,7 @@ public class Home_F extends RootFragment implements Player.EventListener, Fragme
         comment_f.setArguments(args);
         transaction.addToBackStack(null);
         transaction.replace(R.id.MainMenuFragment, comment_f).commit();
-
-
     }
-
-
 
     // this will open the profile of user which have uploaded the currenlty running video
     private void OpenProfile(Home_Get_Set item,boolean from_right_to_left) {
@@ -859,8 +864,11 @@ public class Home_F extends RootFragment implements Player.EventListener, Fragme
          GlWatermarkFilter filter=new GlWatermarkFilter(bitmap_resize, GlWatermarkFilter.Position.LEFT_TOP);
          new GPUMp4Composer(Environment.getExternalStorageDirectory() +"/Tittic/"+item.video_id+"no_watermark"+".mp4",
                 Environment.getExternalStorageDirectory() +"/Tittic/"+item.video_id+".mp4")
-                .filter(filter)
-
+                 .fillMode(FillMode.PRESERVE_ASPECT_FIT)
+                 .filter(filter)
+                 .mute(isMute)
+                 .flipHorizontal(false)
+                 .flipVertical(false)
                 .listener(new GPUMp4Composer.Listener() {
                     @Override
                     public void onProgress(double progress) {
